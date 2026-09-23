@@ -1,0 +1,7 @@
+[advisories]
+# rsa is pulled in by restate-sdk -> restate-sdk-shared-core -> jsonwebtoken.
+# The SDK's request identity verifier accepts only EdDSA and uses public keys;
+# this path does not perform the RSA private-key operations affected by Marvin.
+# No patched rsa release is available. Revisit when upstream fixes or removes it,
+# or if the SDK's crypto usage changes. Keep this exception in sync with deny.toml.
+ignore = ["RUSTSEC-2023-0071"]
