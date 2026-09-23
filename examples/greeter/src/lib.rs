@@ -1,95 +1,86 @@
-//! An example Restate endpoint wired with `restate-config`.
+//! The Greeter service: what the example serves, independent of how it is
+//! configured or served.
 //!
-//! [`config`] builds the endpoint and service policies in code. A real
-//! application would typically deserialize the same [`Config`] from a file or
-//! the environment (for example with Figment); the types are plain Serde
-//! models, so the shape is identical either way.
+//! The binary binds [`Greeter`] into an endpoint with its configured policy;
+//! the end-to-end test binds it with the policy it asserts.
 //!
-//! [`endpoint`] turns that configuration into an SDK `Endpoint`, which the
-//! binary serves and the end-to-end test deploys against a real server.
+//! The greeting depends on the time of day, read with `restate-ext`'s
+//! [`ContextClockExt::now`] rather than `SystemTime::now()`: the reading is
+//! journaled, so a retried or resumed invocation greets with the time its first
+//! attempt read instead of reading the clock again. What to say at a given time
+//! is plain code, [`greeting`], tested without Restate.
 
-use std::{collections::BTreeMap, time::Duration};
+use std::time::{SystemTime, UNIX_EPOCH};
 
-use restate_config::{
-    Config, ConfigError, HandlerOptionsConfig, RetryPolicyOnMaxAttempts, ServiceOptionsConfig,
-};
+use restate_ext::ContextClockExt;
 use restate_sdk::prelude::*;
-use serde::{Deserialize, Serialize};
 
-/// The services this endpoint binds, each with its own policy.
-///
-/// Field names are the application's choice; they do not have to match the
-/// discovered service names.
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-#[serde(default, deny_unknown_fields)]
-pub struct ServicesConfig {
-    /// Policy for the [`Greeter`] service.
-    pub greeter: ServiceOptionsConfig,
-}
-
-/// A greeting service with a public and an internal handler.
+/// A greeting service.
 pub struct Greeter;
 
 #[restate_sdk::service(name = "Greeter")]
 impl Greeter {
-    /// Greets `name`, journaling the greeting as the `greet-person` run.
+    /// Greets `name` for the time of day in UTC, journaling the time as the
+    /// `SystemTime::now()` run and the greeting as the `greet-person` run.
     #[handler]
     async fn greet(&self, ctx: Context<'_>, name: String) -> HandlerResult<String> {
+        let now = ctx.now().await?;
         let greeting = ctx
-            .run(|| async move { Ok(format!("Hello, {name}!")) })
+            .run(|| async move { Ok(greeting(&name, now)) })
             .name("greet-person")
             .await?;
         Ok(greeting)
     }
-
-    /// Only callable by other Restate services: configuration marks it
-    /// ingress-private.
-    #[handler]
-    async fn audit(&self, ctx: Context<'_>, name: String) -> HandlerResult<String> {
-        let entry = ctx
-            .run(|| async move { Ok(format!("audited {name}")) })
-            .name("audit-person")
-            .await?;
-        Ok(entry)
-    }
 }
 
-/// The endpoint configuration, built in code.
+/// The greeting for `name` at `time`, by the hour in UTC.
 #[must_use]
-pub fn config() -> Config<ServicesConfig> {
-    Config {
-        // Listener 0.0.0.0:9080, no identity keys.
-        endpoint: restate_config::EndpointConfig::default(),
-        services: ServicesConfig {
-            greeter: ServiceOptionsConfig {
-                metadata: BTreeMap::from([("team".to_owned(), "greetings".to_owned())]),
-                // Keep completed journals so their runs can be inspected.
-                journal_retention: Some(Duration::from_hours(24)),
-                retry_policy_initial_interval: Some(Duration::from_millis(500)),
-                retry_policy_max_attempts: Some(5),
-                retry_policy_on_max_attempts: Some(RetryPolicyOnMaxAttempts::Pause),
-                handlers: BTreeMap::from([(
-                    "audit".to_owned(),
-                    HandlerOptionsConfig {
-                        ingress_private: Some(true),
-                        ..HandlerOptionsConfig::default()
-                    },
-                )]),
-                ..ServiceOptionsConfig::default()
-            },
-        },
+pub fn greeting(name: &str, time: SystemTime) -> String {
+    let hour = time
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+        / 3600
+        % 24;
+    match hour {
+        5..=11 => format!("Good morning, {name}!"),
+        12..=16 => format!("Good afternoon, {name}!"),
+        17..=21 => format!("Good evening, {name}!"),
+        _ => format!("Hello, {name}, you're up late!"),
     }
 }
 
-/// Binds every configured service and applies the endpoint settings.
-///
-/// The listener address is not part of the SDK endpoint: the caller binds
-/// [`restate_config::EndpointConfig::listener`] when serving.
-///
-/// # Errors
-/// Returns [`ConfigError`] for an unknown handler override or an invalid
-/// identity key.
-pub fn endpoint(config: Config<ServicesConfig>) -> Result<Endpoint, ConfigError> {
-    let builder = Endpoint::builder().bind(config.services.greeter.apply(Greeter)?);
-    Ok(config.endpoint.apply(builder)?.build())
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use super::*;
+
+    /// `hour:minute` UTC on the first day of the epoch.
+    fn at(hour: u64, minute: u64) -> SystemTime {
+        UNIX_EPOCH + Duration::from_hours(hour) + Duration::from_mins(minute)
+    }
+
+    #[test]
+    fn the_greeting_follows_the_hour() {
+        for (time, expected) in [
+            (at(4, 59), "Hello, Ada, you're up late!"),
+            (at(5, 0), "Good morning, Ada!"),
+            (at(11, 59), "Good morning, Ada!"),
+            (at(12, 0), "Good afternoon, Ada!"),
+            (at(17, 0), "Good evening, Ada!"),
+            (at(21, 59), "Good evening, Ada!"),
+            (at(22, 0), "Hello, Ada, you're up late!"),
+        ] {
+            assert_eq!(greeting("Ada", time), expected, "{time:?}");
+        }
+    }
+
+    /// Only the time of day counts, not the date.
+    #[test]
+    fn a_later_day_greets_by_the_same_hour() {
+        let a_year_later = at(9, 30) + Duration::from_hours(365 * 24);
+
+        assert_eq!(greeting("Ada", a_year_later), "Good morning, Ada!");
+    }
 }

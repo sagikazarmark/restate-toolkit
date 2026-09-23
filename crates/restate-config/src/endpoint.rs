@@ -70,3 +70,22 @@ fn identity_keys<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<Strin
             .collect(),
     })
 }
+
+/// Configures an SDK endpoint builder in its own chain:
+/// `Endpoint::builder().configure(&config.endpoint)?`.
+///
+/// The same as [`EndpointConfig::apply`], read from the builder's side, so the
+/// endpoint settings and the services bound after them read top to bottom.
+pub trait ConfigureEndpointExt: Sized {
+    /// Applies the endpoint-wide settings of `config` to this builder.
+    ///
+    /// # Errors
+    /// Returns [`ConfigError::IdentityKey`] if any key is invalid.
+    fn configure(self, config: &EndpointConfig) -> Result<Self, ConfigError>;
+}
+
+impl ConfigureEndpointExt for Builder {
+    fn configure(self, config: &EndpointConfig) -> Result<Self, ConfigError> {
+        config.apply(self)
+    }
+}

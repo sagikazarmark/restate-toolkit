@@ -1,0 +1,38 @@
+[package]
+name = "restate-ext"
+version.workspace = true
+description = "Project-independent plumbing for restate-sdk services: a replay-safe clock, terminal error conversion, and a SIGTERM-aware shutdown"
+edition = { workspace = true }
+rust-version = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+keywords = ["restate", "durable-execution", "clock", "shutdown", "workflow"]
+categories = ["asynchronous", "date-and-time"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = []
+# `shutdown_signal`, which listens for process signals through tokio. Off by
+# default: wasm has no process signals, so it cannot build there.
+shutdown = ["dep:tokio", "dep:tracing"]
+
+[dependencies]
+restate-sdk = { workspace = true }
+tokio = { workspace = true, features = ["macros", "signal"], optional = true }
+tracing = { workspace = true, optional = true }
+web-time = "1.1"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "rt-multi-thread", "time"] }
+
+# The end-to-end test runs the clock against a real restate-server; the harness
+# is unix only.
+[target.'cfg(unix)'.dev-dependencies]
+restate-e2e-harness = { workspace = true }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

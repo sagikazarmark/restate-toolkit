@@ -7,7 +7,9 @@ use std::time::Duration;
 
 use bytes::Bytes;
 use http_body_util::{BodyExt, Empty};
-use restate_config::{Config, ConfigError, EndpointConfig, ServiceOptionsConfig};
+use restate_config::{
+    Config, ConfigError, ConfigureEndpointExt, EndpointConfig, ServiceOptionsConfig,
+};
 use restate_sdk::{prelude::*, service::IntoServiceDefinition};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -204,11 +206,13 @@ async fn sdk_builder_composes_services_objects_and_workflows_with_independent_op
         }
     }))
     .unwrap();
-    let builder = Endpoint::builder()
+    let endpoint = Endpoint::builder()
+        .configure(&config.endpoint)
+        .unwrap()
         .bind(config.services.notifications.apply(Notifications).unwrap())
         .bind(config.services.accounts.apply(Example).unwrap())
-        .bind(config.services.checkout.apply(Workflow).unwrap());
-    let endpoint = config.endpoint.apply(builder).unwrap().build();
+        .bind(config.services.checkout.apply(Workflow).unwrap())
+        .build();
     assert_eq!(config.endpoint.listener.to_string(), "[::1]:9081");
     let manifest = discovery(endpoint).await;
     let services = manifest["services"].as_array().unwrap();
@@ -304,7 +308,7 @@ fn identity_keys_accept_rotation_lists_or_delimited_strings_and_enforce_verifica
     }))
     .unwrap();
     assert_eq!(list.identity_keys, text.identity_keys);
-    let endpoint = list.apply(Endpoint::builder()).unwrap().build();
+    let endpoint = Endpoint::builder().configure(&list).unwrap().build();
     let request = || {
         http::Request::builder()
             .uri("/discover")
@@ -323,7 +327,7 @@ fn identity_keys_accept_rotation_lists_or_delimited_strings_and_enforce_verifica
         ..EndpointConfig::default()
     };
     assert!(matches!(
-        invalid.apply(Endpoint::builder()),
+        Endpoint::builder().configure(&invalid),
         Err(ConfigError::IdentityKey { index: 1, .. })
     ));
 }
