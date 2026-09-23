@@ -20,3 +20,4 @@ updates:
           - "*"
     exclude-paths:
       - .github/workflows/dagger.yaml
+      - .github/workflows/dagger-*.yaml

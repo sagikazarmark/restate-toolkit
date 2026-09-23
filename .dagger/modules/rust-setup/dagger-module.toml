@@ -1,0 +1,3 @@
+name = "rust-setup"
+engineVersion = "v1.0.0"
+runtime.source = "dang"

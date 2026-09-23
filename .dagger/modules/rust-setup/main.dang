@@ -1,0 +1,50 @@
+"""
+The base container of the `rust` module (wired in as its `container` setting
+from `rust-setup:container`): the official Rust image with a `restate-server`
+binary, so end-to-end tests built on `restate-e2e-harness` can spawn a real
+server (`RESTATE_SERVER_BIN`; there is no Docker in the container).
+"""
+type RustSetup {
+  let rustVersion: String!
+  let restateVersion: String!
+
+  new(
+    """
+    Version (image tag) to use from the official Rust image repository.
+    """
+    rustVersion: String!,
+    """
+    The Restate server version end-to-end tests run against; the image
+    `docker.restate.dev/restatedev/restate:<version>` provides the binary.
+    """
+    restateVersion: String! = "1.7.8",
+  ) {
+    self.rustVersion = rustVersion
+    self.restateVersion = restateVersion
+
+    self
+  }
+
+  """
+  The Rust image with `restate-server` installed and selected for the harness.
+  """
+  container: Container! {
+    Dagger
+      .container
+      .from("rust:" + self.rustVersion)
+      .withFile("/usr/local/bin/restate-server", self.restateServer)
+      .withEnvVariable("RESTATE_SERVER_BIN", "/usr/local/bin/restate-server")
+  }
+
+  """
+  The `restate-server` binary from the Restate image, also for running the
+  end-to-end tests locally on Linux
+  (`dagger call rust-setup restate-server export --path ./restate-server`).
+  """
+  restateServer: File! {
+    Dagger
+      .container
+      .from("docker.restate.dev/restatedev/restate:" + self.restateVersion)
+      .file("/usr/local/bin/restate-server")
+  }
+}
