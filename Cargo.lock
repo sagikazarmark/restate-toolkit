@@ -674,6 +674,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "greeter"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "restate-config",
+ "restate-e2e-harness",
+ "restate-sdk",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "group"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1716,6 +1729,7 @@ dependencies = [
  "http-body",
  "http-body-util",
  "hyper",
+ "hyper-util",
  "jsonptr",
  "jsonwebtoken",
  "percent-encoding",

@@ -1,0 +1,30 @@
+[package]
+name = "greeter"
+description = "Example Restate endpoint configured with restate-config and tested with restate-e2e-harness"
+version = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+publish = false
+
+[dependencies]
+restate-config = { workspace = true }
+# `http_server` serves the endpoint; `rust_crypto` verifies configured identity keys.
+restate-sdk = { workspace = true, features = ["http_server", "rust_crypto"] }
+serde = { version = "1.0.228", features = ["derive"] }
+tokio = { version = "1.52.3", features = ["macros", "net", "rt-multi-thread"] }
+
+[target.'cfg(unix)'.dev-dependencies]
+restate-e2e-harness = { workspace = true }
+reqwest = { version = "0.13.2", default-features = false, features = ["json", "rustls"] }
+serde_json = "1.0.143"
+
+[lints]
+workspace = true
+
+# The rust Dagger module runs the ignored end-to-end test too: its container
+# (rust-setup:container) provides restate-server.
+[[package.metadata.dagger.modules]]
+name = "rust"
+hack.test = ["--", "--include-ignored"]

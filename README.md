@@ -14,6 +14,16 @@ Rust crates for building and testing [Restate](https://restate.dev/) services wi
 
 All crates are released together and share a version.
 
+## Example
+
+[`examples/greeter`](examples/greeter) is an endpoint configured with `restate-config` and tested
+end-to-end with `restate-e2e-harness`. Its end-to-end test is ignored by default; run it with a
+`restate-server` binary:
+
+```shell
+RESTATE_SERVER_BIN="$PWD/restate-server" cargo test -p greeter -- --ignored
+```
+
 ## Development
 
 Run the local Rust checks with:

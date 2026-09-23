@@ -5,5 +5,6 @@
 ["","git-latest",["github.com/sagikazarmark/daggerverse-beta",["tagPrefix","dagger-gha"]],"refs/heads/main"]
 ["","git-latest",["github.com/sagikazarmark/daggerverse-beta",["tagPrefix","rust"]],"refs/heads/main"]
 ["","git-sha",["github.com/rustsec/advisory-db","HEAD"],"6477ec04375b913e13f38d966dc49eba9d178cb8"]
-["","git-sha",["github.com/sagikazarmark/daggerverse-beta","refs/heads/main"],"b0671fd12a040feaf0f811c70d66199cbbcd24ca"]
+["","git-sha",["github.com/sagikazarmark/daggerverse-beta","refs/heads/main"],"07b4569e1a9dcf0cccd9091616c7fc1a094d529b"]
 ["","oci-sha",["docker.io/library/rust:1.98-slim-trixie"],"sha256:f47a8de237dcbb0b0ce1099901e60a89728e3d51f24e664b40e947171538ade7"]
+["","oci-sha",["docker.restate.dev/restatedev/restate:1.7.8"],"sha256:fe23d866cc625a745f73f14e05ee6ca5b26441af3b18df8c54dfda4e1bb1d52d"]
