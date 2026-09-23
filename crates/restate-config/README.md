@@ -30,7 +30,7 @@ serde_json = "1"
 Define your application's service configuration, deserialize it, and apply each policy when binding its service:
 
 ```rust
-use restate_config::{Config, ServiceOptionsConfig};
+use restate_config::{Config, ConfigureEndpointExt, ServiceOptionsConfig};
 use restate_sdk::prelude::*;
 use serde::Deserialize;
 
@@ -72,16 +72,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     "#)?;
 
-    let builder = Endpoint::builder()
-        .bind(config.services.notifications.apply(Notifications)?);
-    let endpoint = config.endpoint.apply(builder)?.build();
+    let endpoint = Endpoint::builder()
+        .configure(&config.endpoint)?
+        .bind(config.services.notifications.apply(Notifications)?)
+        .build();
 
     // Bind config.endpoint.listener and serve endpoint using the SDK's HttpServer.
     Ok(())
 }
 ```
 
-`ServiceOptionsConfig::apply` works with services, virtual objects, and workflows. It checks handler override names before returning an SDK service definition for `.bind(...)`.
+`ServiceOptionsConfig::apply` works with services, virtual objects, and workflows. It checks handler override names before returning an SDK service definition for `.bind(...)`. `ConfigureEndpointExt::configure` applies the endpoint-wide settings, such as identity keys, to the builder.
 
 The fields in `ServicesConfig` are application-defined: they do not need to match discovered service names. Use a struct for a fixed set of services, or `Config<BTreeMap<String, ServiceOptionsConfig>>` for a dynamic set. Handler override keys must match the exact, case-sensitive discovered handler names.
 

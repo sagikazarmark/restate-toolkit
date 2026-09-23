@@ -1,6 +1,6 @@
 [package]
 name = "greeter"
-description = "Example Restate endpoint configured with restate-config and tested with restate-e2e-harness"
+description = "Example Restate endpoint configured with restate-config, greeting by the time of day with restate-ext, and tested with restate-e2e-harness"
 version = { workspace = true }
 edition = { workspace = true }
 rust-version = { workspace = true }
@@ -10,10 +10,14 @@ publish = false
 
 [dependencies]
 restate-config = { workspace = true }
-# `http_server` serves the endpoint; `rust_crypto` verifies configured identity keys.
-restate-sdk = { workspace = true, features = ["http_server", "rust_crypto"] }
+restate-ext = { workspace = true, features = ["shutdown"] }
+# `http_server` serves the endpoint; `rust_crypto` verifies configured identity keys;
+# `tracing-span-filter` provides the filter that drops log lines re-emitted on replay.
+restate-sdk = { workspace = true, features = ["http_server", "rust_crypto", "tracing-span-filter"] }
 serde = { version = "1.0.228", features = ["derive"] }
 tokio = { version = "1.52.3", features = ["macros", "net", "rt-multi-thread"] }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "fmt"] }
 
 [target.'cfg(unix)'.dev-dependencies]
 restate-e2e-harness = { workspace = true }

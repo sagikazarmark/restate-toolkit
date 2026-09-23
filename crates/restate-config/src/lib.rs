@@ -4,15 +4,16 @@
 //! policy, accept human-readable durations, and work with any Serde source.
 //! [`Config`] groups application-defined service policies with endpoint
 //! identity and listener settings. [`EndpointConfig`] applies verification keys
-//! to an existing SDK builder. Keep using `Endpoint::builder()`, `.bind(...)`, and
-//! `HttpServer` directly. Attach policy with `config.apply(service)?`, or use
+//! to an existing SDK builder, as `builder.configure(&config.endpoint)?` with
+//! [`ConfigureEndpointExt`] in scope. Keep using `Endpoint::builder()`,
+//! `.bind(...)`, and `HttpServer` directly. Attach policy with `config.apply(service)?`, or use
 //! `.options(config.into())` when working with SDK service definitions.
 //!
 //! Applications own configuration sources, the server lifecycle, shutdown
 //! signals, and logging setup. The models work with Figment through Serde.
 //!
 //! ```
-//! use restate_config::{Config, ServiceOptionsConfig};
+//! use restate_config::{Config, ConfigureEndpointExt, ServiceOptionsConfig};
 //! use restate_sdk::prelude::*;
 //! use serde::{Deserialize, Serialize};
 //!
@@ -33,8 +34,10 @@
 //!
 //! # fn main() -> Result<(), restate_config::ConfigError> {
 //! let config = Config::<ServicesConfig>::default();
-//! let builder = Endpoint::builder().bind(config.services.example.apply(Example)?);
-//! let endpoint = config.endpoint.apply(builder)?.build();
+//! let endpoint = Endpoint::builder()
+//!     .configure(&config.endpoint)?
+//!     .bind(config.services.example.apply(Example)?)
+//!     .build();
 //! // Bind config.endpoint.listener and serve using the SDK's HttpServer.
 //! # Ok(())
 //! # }
@@ -48,5 +51,5 @@ mod endpoint;
 mod options;
 
 pub use config::{Config, ConfigError};
-pub use endpoint::EndpointConfig;
+pub use endpoint::{ConfigureEndpointExt, EndpointConfig};
 pub use options::{HandlerOptionsConfig, RetryPolicyOnMaxAttempts, ServiceOptionsConfig};
