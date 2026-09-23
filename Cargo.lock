@@ -675,7 +675,7 @@ dependencies = [
 
 [[package]]
 name = "greeter"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "reqwest",
  "restate-config",
@@ -1707,7 +1707,7 @@ dependencies = [
 
 [[package]]
 name = "restate-config"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "http",
@@ -1722,7 +1722,7 @@ dependencies = [
 
 [[package]]
 name = "restate-e2e-harness"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "h2",
  "http",
@@ -1740,7 +1740,7 @@ dependencies = [
 
 [[package]]
 name = "restate-ext"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "restate-e2e-harness",
  "restate-sdk",
