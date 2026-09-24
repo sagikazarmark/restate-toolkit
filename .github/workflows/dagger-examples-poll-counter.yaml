@@ -12,7 +12,8 @@ jobs:
               with:
                 verb: check
                 version: v1.0.0-beta.14
-name: Dagger
+                workdir: examples/poll-counter
+name: Dagger (examples/poll-counter)
 "on":
     pull_request: {}
     push:
