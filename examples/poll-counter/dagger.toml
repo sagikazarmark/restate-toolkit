@@ -1,0 +1,18 @@
+ignore = [".devenv", "target"]
+
+# The repository's Rust image with restate-server, the base container of the rust module.
+[modules.rust-setup]
+source = "../../.dagger/modules/rust-setup"
+
+settings.rustVersion = "1.98-slim-trixie"
+
+[modules.rust]
+source = "github.com/sagikazarmark/daggerverse-beta/rust"
+# cargo-audit reads Cargo.lock from the working directory; the shared lockfile
+# at the repository root is audited by the root workspace.
+check.skip = ["audit"]
+
+settings.container = "rust-setup:container"
+
+[modules.dagger-gha]
+source = "github.com/sagikazarmark/daggerverse-beta/dagger-gha"

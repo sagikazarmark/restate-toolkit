@@ -1,0 +1,22 @@
+[package]
+name = "poll-counter"
+description = "Wait durably for a Restate counter to reach ten with restate-ext"
+version = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+publish = false
+
+[dependencies]
+restate-ext = { workspace = true, features = ["shutdown"] }
+restate-sdk = { workspace = true, features = ["http_server", "tracing-span-filter"] }
+tokio = { workspace = true, features = ["macros", "net", "rt-multi-thread"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "fmt"] }
+
+[target.'cfg(unix)'.dev-dependencies]
+restate-e2e-harness = { workspace = true }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true
