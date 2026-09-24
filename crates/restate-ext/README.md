@@ -5,7 +5,7 @@
 [![crates.io](https://img.shields.io/crates/v/restate-ext?style=flat-square)](https://crates.io/crates/restate-ext)
 [![docs.rs](https://img.shields.io/docsrs/restate-ext?style=flat-square)](https://docs.rs/restate-ext)
 
-Plumbing for [Restate](https://restate.dev/) services built with the [Restate Rust SDK](https://docs.rs/restate-sdk): a replay-safe clock, terminal error conversion, and a SIGTERM-aware shutdown signal.
+Plumbing for [Restate](https://restate.dev/) services built with the [Restate Rust SDK](https://docs.rs/restate-sdk): a replay-safe clock, durable polling, terminal error conversion, and a SIGTERM-aware shutdown signal.
 
 These are the small pieces every durable service needs around its handlers and tends to rewrite: a clock read that survives a replay, an error that stops retries with the status code you choose, and a stop that honours the signal containers are stopped with.
 
@@ -69,6 +69,72 @@ A replay matches journal entries by position, not by name, so reading the clock 
 
 The journal stores the time as milliseconds since the Unix epoch, so the entry reads as a number in Restate's UI. The clock is read through [`web-time`](https://docs.rs/web-time), so it also works on `wasm32-unknown-unknown`, where `std`'s clock panics. (Building the Restate SDK for that target needs `getrandom` 0.2 with its `js` feature enabled.)
 
+### Durable polling
+
+`restate_ext::poll::Poller` runs a check repeatedly with a fixed delay:
+
+```rust,ignore
+use std::{ops::ControlFlow, time::Duration};
+use restate_ext::poll::{Poller, PollOutcome};
+
+let poller = Poller::builder(Duration::from_secs(1))
+    .timeout(Duration::from_secs(60))
+    .max_attempts(10)
+    .build()?;
+
+let outcome = poller.poll(&ctx, || async {
+    let value = ctx.get::<u64>("value").await?.unwrap_or_default();
+
+    if value >= 10 {
+        Ok(ControlFlow::Break(value))
+    } else {
+        Ok(ControlFlow::Continue(value))
+    }
+}).await?;
+```
+
+The callback returns `ControlFlow::Break(result)` to finish, or
+`ControlFlow::Continue(value)` to keep waiting. The result is
+`PollOutcome::Finished(result)` or `PollOutcome::Failed { reason, last }`.
+The failure reason is `PollFailure::TimedOut` or `PollFailure::AttemptsExhausted`,
+with the last value available for a useful message. Check and Restate errors
+propagate through the outer `Result`.
+
+`.build()` validates the configuration before polling can start. Both
+`Poller::builder(interval)` and `PollerBuilder::new(interval)` require the interval
+up front; timeout and attempt limits are optional. Without either limit, polling
+continues until the check finishes, returns an error, or the invocation is cancelled.
+Without `.timeout(...)`, it makes no clock reads. A poller can be reused; every
+`.poll()` call starts its own timeout and attempt count.
+
+`max_attempts` includes the first check: a limit of ten permits ten checks and at
+most nine sleeps. One checks once; zero is rejected by `.build()`. Retries inside
+a check and Restate replay do not consume extra attempts.
+
+A final result or check error always wins. After a check asks to keep waiting,
+the attempt limit is checked first, followed by the timeout. If both limits apply
+at that point, the reason is `AttemptsExhausted`.
+
+For this state-polling example, use a `SharedObjectContext` and `#[handler(lazy_state)]`:
+the shared handler allows updates, and lazy state makes each new read see those updates.
+
+The callback owns durable I/O: read state through the context, make a durable service
+call, or individually await a `ctx.run` for external I/O. The condition itself is plain
+Rust. Neither the callback nor its output needs an additional serialization layer
+from the poller.
+
+- Checks once immediately; zero timeout means one check without sleeping.
+- Sleeps through Restate between checks, shortening the delay near timeout.
+- With a timeout, uses journaled `poll.clock` readings and checks the deadline between operations.
+- Accepts a conclusive observation even if it completes after the deadline. The timeout
+  cannot interrupt an in-flight operation or retries; replay preserves earlier decisions.
+- Supports all five SDK contexts. Exclusive object handlers retain their lock while waiting.
+- Requires a positive interval and whole-millisecond durations, each at most
+  `u64::MAX / 2` milliseconds. Invalid settings produce a terminal 400 error from `.build()`.
+
+The standalone [`poll-counter` example](../../examples/poll-counter) shows a counter
+reaching ten, with runnable requests and an end-to-end test.
+
 ### Terminal errors
 
 `TerminalErrorExt::terminal` turns any `Result` error into a `TerminalError`, which Restate does not retry. Unlike the SDK's trait of the same name, which resolves to a `HandlerError`, it keeps the `TerminalError`, so you can still set a status code:
@@ -114,7 +180,10 @@ See the [API documentation](https://docs.rs/restate-ext) for details, and [`exam
 
 ## Testing
 
-The end-to-end test runs the clock against a real `restate-server` and checks that a retried attempt replays the journaled readings. It is Unix only and ignored by default; run it with a `restate-server` binary:
+The end-to-end tests run against a real `restate-server`. They check clock replay and
+polling across retries, pauses, and cancellation, including timer reuse and a late
+observation authorized by a replayed clock check. They are Unix only and ignored by
+default; run them with a `restate-server` binary:
 
 ```shell
 RESTATE_SERVER_BIN="$PWD/restate-server" cargo test -p restate-ext -- --ignored

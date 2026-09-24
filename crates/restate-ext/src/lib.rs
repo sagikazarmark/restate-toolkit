@@ -1,11 +1,12 @@
 //! Plumbing for [`restate_sdk`] services, with no application in it.
 //!
 //! What a durable service needs around its handlers and keeps rewriting: a clock read that
-//! survives a replay and a stop that honours SIGTERM.
+//! survives a replay, polling that waits durably, and a stop that honours SIGTERM.
 //!
 //! - [`clock`] — read the wall clock as a journaled step, so a replay stamps what the first
 //!   run stamped.
 //! - [`errors`] — turn any error into a terminal one, and still set its code.
+//! - [`poll`] — repeat a check with a fixed delay and optional timeout and attempt limits.
 //! - `shutdown` — a drain that starts on SIGTERM as well as SIGINT, behind the `shutdown`
 //!   feature. Wasm has no process signals, so leave it off there.
 //!
@@ -18,6 +19,7 @@
 
 pub mod clock;
 pub mod errors;
+pub mod poll;
 #[cfg(feature = "shutdown")]
 #[cfg_attr(docsrs, doc(cfg(feature = "shutdown")))]
 pub mod shutdown;

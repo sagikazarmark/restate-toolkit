@@ -11,11 +11,11 @@ Rust crates for building and testing [Restate](https://restate.dev/) services wi
 | ----- | ----------- | - |
 | [`restate-config`](crates/restate-config) | Serde configuration types and SDK option adapters for Restate endpoints | [![crates.io](https://img.shields.io/crates/v/restate-config?style=flat-square)](https://crates.io/crates/restate-config) [![docs.rs](https://img.shields.io/docsrs/restate-config?style=flat-square)](https://docs.rs/restate-config) |
 | [`restate-e2e-harness`](crates/restate-e2e-harness) | End-to-end test harness for Restate SDK endpoints against a real `restate-server` (Unix only) | [![crates.io](https://img.shields.io/crates/v/restate-e2e-harness?style=flat-square)](https://crates.io/crates/restate-e2e-harness) [![docs.rs](https://img.shields.io/docsrs/restate-e2e-harness?style=flat-square)](https://docs.rs/restate-e2e-harness) |
-| [`restate-ext`](crates/restate-ext) | Replay-safe clock, terminal error conversion, and SIGTERM-aware shutdown for Restate SDK services | [![crates.io](https://img.shields.io/crates/v/restate-ext?style=flat-square)](https://crates.io/crates/restate-ext) [![docs.rs](https://img.shields.io/docsrs/restate-ext?style=flat-square)](https://docs.rs/restate-ext) |
+| [`restate-ext`](crates/restate-ext) | Replay-safe clock, durable polling, terminal error conversion, and SIGTERM-aware shutdown for Restate SDK services | [![crates.io](https://img.shields.io/crates/v/restate-ext?style=flat-square)](https://crates.io/crates/restate-ext) [![docs.rs](https://img.shields.io/docsrs/restate-ext?style=flat-square)](https://docs.rs/restate-ext) |
 
 All crates are released together and share a version.
 
-## Example
+## Examples
 
 [`examples/greeter`](examples/greeter) is an endpoint configured with `restate-config` that greets by the
 time of day, read with the replay-safe clock of `restate-ext`, and tested end-to-end with
@@ -23,6 +23,14 @@ time of day, read with the replay-safe clock of `restate-ext`, and tested end-to
 
 ```shell
 RESTATE_SERVER_BIN="$PWD/restate-server" cargo test -p greeter -- --ignored
+```
+
+[`examples/poll-counter`](examples/poll-counter) waits durably for a counter to reach ten
+while other requests update it. It separates durable observations from the domain condition
+and demonstrates fixed-delay polling, timeout diagnostics, and an end-to-end test:
+
+```shell
+RESTATE_SERVER_BIN="$PWD/restate-server" cargo test --locked -p poll-counter --test e2e -- --ignored
 ```
 
 ## Development
