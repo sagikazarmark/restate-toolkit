@@ -241,7 +241,7 @@ fn unavailable_raw_cannot_pass_a_negative_content_assertion() {
         None,
         &json!({"Command": {"Input": {}}}),
     );
-    assert!(empty.raw.is_empty());
+    assert_eq!(empty.raw, Vec::<u8>::new());
     assert!(!empty.raw_contains("secret"));
 }
 

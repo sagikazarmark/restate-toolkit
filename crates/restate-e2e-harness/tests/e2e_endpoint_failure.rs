@@ -8,18 +8,13 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
-use restate_e2e_harness::gate::{PROTOCOL_V7, SCOPED_VIRTUAL_OBJECTS, VQUEUES};
 use restate_e2e_harness::{Call, ReusePolicy, ServerSpec, launcher_or_skip};
 use restate_sdk::prelude::*;
 use serde_json::json;
 
 const SERVER: ServerSpec = ServerSpec {
     name: "endpoint-failure",
-    features: &[
-        (VQUEUES, true),
-        (PROTOCOL_V7, true),
-        (SCOPED_VIRTUAL_OBJECTS, true),
-    ],
+    features: &[],
     env: &[],
 };
 

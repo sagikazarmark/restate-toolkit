@@ -16,7 +16,6 @@
     reason = "the macro-generated `SmokeClient` carries no documentation"
 )]
 
-use restate_e2e_harness::gate::{PROTOCOL_V7, SCOPED_VIRTUAL_OBJECTS, VQUEUES};
 use restate_e2e_harness::{
     Call, Launcher, ReusePolicy, ServerSpec, launcher_or_skip, run_result, run_result_at,
 };
@@ -26,11 +25,7 @@ use serde_json::json;
 
 const SERVER: ServerSpec = ServerSpec {
     name: "smoke",
-    features: &[
-        (VQUEUES, true),
-        (PROTOCOL_V7, true),
-        (SCOPED_VIRTUAL_OBJECTS, true),
-    ],
+    features: &[],
     env: &[],
 };
 
@@ -306,7 +301,7 @@ async fn check_raw_ingress(restate: &restate_e2e_harness::Restate) {
         .expect("invocation id")
         .to_str()
         .expect("text invocation id");
-    assert!(restate.admin().runs(id).await.is_empty());
+    assert_eq!(restate.admin().runs(id).await, Vec::<String>::new());
 }
 
 async fn check_run_correlation(restate: &restate_e2e_harness::Restate) {

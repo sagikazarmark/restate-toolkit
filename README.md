@@ -1,6 +1,6 @@
 # Restate Toolkit
 
-[![ci](https://img.shields.io/github/actions/workflow/status/sagikazarmark/restate-toolkit/dagger.yaml?style=flat-square&label=ci)](https://github.com/sagikazarmark/restate-toolkit/actions/workflows/dagger.yaml)
+[![ci](https://img.shields.io/github/actions/workflow/status/sagikazarmark/restate-toolkit/ci.yaml?style=flat-square&label=ci)](https://github.com/sagikazarmark/restate-toolkit/actions/workflows/ci.yaml)
 [![openssf scorecard](https://api.securityscorecards.dev/projects/github.com/sagikazarmark/restate-toolkit/badge?style=flat-square&label=openssf%20scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/sagikazarmark/restate-toolkit)
 
 Rust crates for building and testing [Restate](https://restate.dev/) services with the [Restate Rust SDK](https://docs.rs/restate-sdk).
@@ -35,21 +35,17 @@ RESTATE_SERVER_BIN="$PWD/restate-server" cargo test --locked -p poll-counter --t
 
 ## Development
 
-Run the local Rust checks with:
+The development environment is managed by [devenv](https://devenv.sh): it provides the Rust toolchain,
+the cargo tools CI uses, [just](https://just.systems) and a `restate-server` binary (`RESTATE_SERVER_BIN`)
+for the end-to-end tests.
+
+Each CI job is a [just](justfile) recipe. List them with `just`, and run them all with:
 
 ```shell
-cargo fmt --all --check
-cargo clippy --locked --all-targets -- -D warnings
-cargo test --locked --all-targets
-cargo test --locked --doc
-RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps
+just ci
 ```
 
-Run the same repository gate used by CI with:
-
-```shell
-dagger check
-```
+`just e2e` runs the ignored end-to-end tests of every crate and example against a real `restate-server`.
 
 See the individual crate READMEs for crate-specific tests (e.g. the end-to-end tests of `restate-e2e-harness`).
 

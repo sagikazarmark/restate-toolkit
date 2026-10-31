@@ -7,18 +7,13 @@
 use std::collections::BTreeSet;
 use std::time::Duration;
 
-use restate_e2e_harness::gate::{PROTOCOL_V7, SCOPED_VIRTUAL_OBJECTS, VQUEUES};
 use restate_e2e_harness::{Admin, Call, ReusePolicy, ServerSpec, Target, Watch, launcher_or_skip};
 use restate_sdk::prelude::*;
 use serde_json::json;
 
 const SERVER: ServerSpec = ServerSpec {
     name: "targets",
-    features: &[
-        (VQUEUES, true),
-        (PROTOCOL_V7, true),
-        (SCOPED_VIRTUAL_OBJECTS, true),
-    ],
+    features: &[],
     env: &[],
 };
 

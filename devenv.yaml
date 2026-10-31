@@ -11,10 +11,17 @@ inputs:
     url: github:sagikazarmark/devenv-extras
     overlays:
       - default
-  dagger:
-    url: github:dagger/nix
+  nix-restate:
+    url: github:sagikazarmark/nix-restate
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
     overlays:
       - default
 
 imports:
   - extras/modules
+
+nixpkgs:
+  permitted_unfree_packages:
+    - restate-bin

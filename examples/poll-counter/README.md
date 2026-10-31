@@ -125,19 +125,19 @@ RESTATE_SERVER_BIN=/path/to/restate-server \
   cargo test --locked -p poll-counter --test e2e -- --ignored
 ```
 
-Verified against Restate **1.7.8**. The library also has real-server tests for replay,
+Verified against Restate **1.8.0**. The library also has real-server tests for replay,
 paused time consuming the timeout, timer reuse, and cancellation in
 [`restate-ext/tests/poll.rs`](../../crates/restate-ext/tests/poll.rs).
 
 ## CI
 
-The [GitHub Actions workflow](../../.github/workflows/dagger-examples-poll-counter.yaml)
-runs the repository's Rust image with `restate-server` installed. It selects both
-`poll-counter` and `restate-ext`, including ignored tests, so the example and the
-library's replay, pause, and cancellation scenarios run in CI too.
+The repository's [CI workflow](../../.github/workflows/ci.yaml) runs the ignored tests of the
+whole workspace in its `e2e` job, in the [devenv](../../devenv.nix) shell, which provides
+`restate-server` and sets `RESTATE_SERVER_BIN`. That covers this example and the
+library's replay, pause, and cancellation scenarios.
 
-Run the same command from the repository root, preserving the Cargo workspace:
+Run the same command from the repository root, in the devenv shell:
 
 ```shell
-dagger call rust test --package=poll-counter,restate-ext --args=--include-ignored
+just e2e
 ```

@@ -1,5 +1,6 @@
 #![expect(
     clippy::unused_async,
+    clippy::unused_async_trait_impl,
     reason = "SDK handlers require async signatures; these handlers only supply discovery metadata"
 )]
 
