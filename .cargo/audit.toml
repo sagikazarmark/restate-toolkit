@@ -1,7 +1,19 @@
 [advisories]
-# rsa is pulled in by restate-sdk -> restate-sdk-shared-core -> jsonwebtoken.
-# The SDK's request identity verifier accepts only EdDSA and uses public keys;
-# this path does not perform the RSA private-key operations affected by Marvin.
-# No patched rsa release is available. Revisit when upstream fixes or removes it,
-# or if the SDK's crypto usage changes. Keep this exception in sync with deny.toml.
-ignore = ["RUSTSEC-2023-0071"]
+# Keep these exceptions in sync with deny.toml.
+ignore = [
+  # rsa is pulled in by restate-sdk -> restate-sdk-shared-core -> jsonwebtoken.
+  # The SDK's request identity verifier accepts only EdDSA and uses public keys;
+  # this path does not perform the RSA private-key operations affected by Marvin.
+  # No patched rsa release is available. Revisit when upstream fixes or removes it,
+  # or if the SDK's crypto usage changes.
+  "RUSTSEC-2023-0071",
+
+  # crypto-bigint 0.5 is pulled in by restate-sdk -> restate-sdk-shared-core ->
+  # jsonwebtoken 10 -> p256/p384 -> elliptic-curve 0.13. The fix requires
+  # crypto-bigint 0.7, which the elliptic-curve 0.13 line cannot use, and
+  # restate-sdk-shared-core 8.2.0 (latest) still depends on jsonwebtoken 10.
+  # The SDK's request identity verifier accepts only EdDSA and uses public keys,
+  # so the ECDSA code paths that use crypto-bigint never handle secret data.
+  # Revisit when restate-sdk-shared-core moves to jsonwebtoken 11+.
+  "RUSTSEC-2026-0387",
+]
