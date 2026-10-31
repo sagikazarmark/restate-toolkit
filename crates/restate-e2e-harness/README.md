@@ -58,15 +58,15 @@ which the Restate image carries at `/usr/local/bin/restate-server`. On Linux, co
 selects the host architecture):
 
 ```shell
-id=$(docker create docker.restate.dev/restatedev/restate:1.7.8)
+id=$(docker create docker.restate.dev/restatedev/restate:1.8.0)
 docker cp "$id:/usr/local/bin/restate-server" ./restate-server
 docker rm "$id"
 ```
 
 The image's binary is Linux-only. On macOS, use a native `restate-server` from the
 [Restate installation instructions](https://docs.restate.dev/installation).
-The quick start below is tested with **Rust SDK 0.12.0 and Restate server 1.7.8**,
-with vqueues, protocol v7 and scoped Virtual Objects enabled. This crate requires
+The quick start below is tested with **Rust SDK 0.12.0 and Restate server 1.8.0**,
+where vqueues, protocol v7 and scoped Virtual Objects are on by default. This crate requires
 **Unix** and **Rust 1.92 or later**.
 
 ## Quick Start
@@ -86,14 +86,13 @@ Save the complete test below as `tests/e2e.rs`. `macros` provides `#[tokio::test
 journal explicitly so its named run is still available after the call completes.
 
 ```rust,no_run,test_harness
-use restate_e2e_harness::gate::{PROTOCOL_V7, SCOPED_VIRTUAL_OBJECTS, VQUEUES};
 use restate_e2e_harness::{Call, ReusePolicy, ServerSpec, launcher_or_skip, run_result};
 use restate_sdk::prelude::*;
 use serde_json::json;
 
 const SERVER: ServerSpec = ServerSpec {
     name: "quick-start",
-    features: &[(VQUEUES, true), (PROTOCOL_V7, true), (SCOPED_VIRTUAL_OBJECTS, true)],
+    features: &[],
     env: &[],
 };
 

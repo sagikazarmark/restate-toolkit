@@ -12,7 +12,6 @@ use std::{
     time::Duration,
 };
 
-use restate_e2e_harness::gate::{PROTOCOL_V7, SCOPED_VIRTUAL_OBJECTS, VQUEUES};
 use restate_e2e_harness::{
     Admin, Call, JournalEntry, Restate, ReusePolicy, ServerSpec, launcher_or_skip, run_result_at,
 };
@@ -30,11 +29,7 @@ const WAIT_TIMEOUT: Duration = Duration::from_secs(30);
 
 const SERVER: ServerSpec = ServerSpec {
     name: "restate-ext-poll",
-    features: &[
-        (VQUEUES, true),
-        (PROTOCOL_V7, true),
-        (SCOPED_VIRTUAL_OBJECTS, true),
-    ],
+    features: &[],
     env: &[],
 };
 

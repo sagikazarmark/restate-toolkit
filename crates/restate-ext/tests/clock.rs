@@ -13,7 +13,6 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use restate_e2e_harness::gate::{PROTOCOL_V7, SCOPED_VIRTUAL_OBJECTS, VQUEUES};
 use restate_e2e_harness::{Call, ReusePolicy, ServerSpec, launcher_or_skip, run_result};
 use restate_ext::ContextClockExt;
 use restate_sdk::prelude::*;
@@ -21,11 +20,7 @@ use serde_json::json;
 
 const SERVER: ServerSpec = ServerSpec {
     name: "restate-ext-clock",
-    features: &[
-        (VQUEUES, true),
-        (PROTOCOL_V7, true),
-        (SCOPED_VIRTUAL_OBJECTS, true),
-    ],
+    features: &[],
     env: &[],
 };
 

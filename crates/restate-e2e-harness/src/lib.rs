@@ -61,7 +61,7 @@
 //! `/usr/local/bin/restate-server`:
 //!
 //! ```sh
-//! id=$(docker create docker.restate.dev/restatedev/restate:1.7.8)
+//! id=$(docker create docker.restate.dev/restatedev/restate:1.8.0)
 //! docker cp "$id:/usr/local/bin/restate-server" ./restate-server
 //! docker rm "$id"
 //! RESTATE_SERVER_BIN=$PWD/restate-server cargo test -- --ignored

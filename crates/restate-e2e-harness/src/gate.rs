@@ -194,18 +194,27 @@ impl Feature {
 }
 
 /// Virtual queues, which scoped Virtual Objects need.
+///
+/// Experimental in Restate 1.7. Since 1.8 it is on by default and `/version`
+/// no longer reports it, so a spec for a 1.8 server must not list it.
 pub const VQUEUES: Feature = Feature {
     name: "vqueues",
     flag: "RESTATE_EXPERIMENTAL_ENABLE_VQUEUES",
 };
 
 /// Service protocol v7; below it the SDK sees no scope.
+///
+/// Experimental in Restate 1.7. Since 1.8 it is on by default and `/version`
+/// no longer reports it, so a spec for a 1.8 server must not list it.
 pub const PROTOCOL_V7: Feature = Feature {
     name: "protocol_v7",
     flag: "RESTATE_EXPERIMENTAL_ENABLE_PROTOCOL_V7",
 };
 
 /// Scoped Virtual Objects (`/restate/scope/{scope}/…`).
+///
+/// Experimental in Restate 1.7. Since 1.8 it is on by default and `/version`
+/// no longer reports it, so a spec for a 1.8 server must not list it.
 pub const SCOPED_VIRTUAL_OBJECTS: Feature = Feature {
     name: "scoped_virtual_objects",
     flag: "RESTATE_EXPERIMENTAL_ENABLE_SCOPED_VIRTUAL_OBJECTS",
