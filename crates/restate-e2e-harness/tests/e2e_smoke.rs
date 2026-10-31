@@ -306,7 +306,7 @@ async fn check_raw_ingress(restate: &restate_e2e_harness::Restate) {
         .expect("invocation id")
         .to_str()
         .expect("text invocation id");
-    assert!(restate.admin().runs(id).await.is_empty());
+    assert_eq!(restate.admin().runs(id).await, Vec::<String>::new());
 }
 
 async fn check_run_correlation(restate: &restate_e2e_harness::Restate) {

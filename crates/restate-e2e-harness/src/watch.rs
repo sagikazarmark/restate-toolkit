@@ -486,8 +486,8 @@ mod tests {
             assert!(error.contains("row 1"), "{error}");
             assert!(error.contains(field), "{error}");
             assert_eq!(retries.max_retry_count, 0);
-            assert!(retries.failures.is_empty());
-            assert!(retries.failing_commands.is_empty());
+            assert_eq!(retries.failures, Vec::<String>::new());
+            assert_eq!(retries.failing_commands, Vec::<String>::new());
             assert!(!retries.observed_idle);
             assert_eq!(
                 sampler.observe(&[]),
@@ -601,7 +601,7 @@ mod tests {
         assert!(retries.samples >= 2, "{retries:?}");
         assert!(!retries.observed_idle, "{retries:?}");
         assert_eq!(retries.max_retry_count, 0);
-        assert!(retries.failing_commands.is_empty());
+        assert_eq!(retries.failing_commands, Vec::<String>::new());
         assert_eq!(
             retries.samples,
             u64::try_from(sampled.load(Ordering::SeqCst)).expect("count"),

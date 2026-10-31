@@ -824,8 +824,8 @@ mod tests {
             BTreeSet::from(["Inv.Api.audit".to_owned()])
         );
         assert!(violations.undeployed.is_empty());
-        assert!(violations.unexplained.is_empty());
-        assert!(violations.unwalked.is_empty());
+        assert_eq!(violations.unexplained, Vec::<String>::new());
+        assert_eq!(violations.unwalked, Vec::<String>::new());
         assert!(violations.to_string().contains("Inv.Api.audit"));
 
         let (row, journal) = invocation("inv_7", "Inv.Stock", "restock", &["settings"]);
@@ -915,7 +915,7 @@ mod tests {
                     .to_owned()
             ]
         );
-        assert!(violations.unexplained.is_empty());
+        assert_eq!(violations.unexplained, Vec::<String>::new());
     }
 
     /// Retention expiry or incomplete collection cannot establish conformance,
