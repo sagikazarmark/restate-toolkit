@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   dotenv.enable = true;
@@ -20,7 +25,15 @@
     rust = {
       enable = true;
       channel = "stable";
-      # targets = [ "wasm32-unknown-unknown" ];
+      targets = [ "wasm32-unknown-unknown" ];
     };
   };
+
+  services.restate = {
+    enable = true;
+    package = pkgs.restate-bin;
+  };
+
+  # The end-to-end tests start their own restate-server.
+  env.RESTATE_SERVER_BIN = lib.getExe' config.services.restate.package "restate-server";
 }
