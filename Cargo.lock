@@ -675,7 +675,7 @@ dependencies = [
 
 [[package]]
 name = "greeter"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "reqwest",
  "restate-config",
@@ -1410,7 +1410,7 @@ checksum = "f6b464fbc74e149a392436b17d523f769e057cb6877f6a5c4618bc6f11800548"
 
 [[package]]
 name = "poll-counter"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "restate-e2e-harness",
  "restate-ext",
@@ -1720,7 +1720,7 @@ dependencies = [
 
 [[package]]
 name = "restate-config"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "bytes",
  "http",
@@ -1735,7 +1735,7 @@ dependencies = [
 
 [[package]]
 name = "restate-e2e-harness"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "h2",
  "http",
@@ -1753,7 +1753,7 @@ dependencies = [
 
 [[package]]
 name = "restate-ext"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "restate-e2e-harness",
  "restate-sdk",
