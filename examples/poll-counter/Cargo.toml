@@ -20,7 +20,3 @@ serde_json = { workspace = true }
 
 [lints]
 workspace = true
-
-[[package.metadata.dagger.modules]]
-name = "rust"
-hack.test = ["--", "--include-ignored"]

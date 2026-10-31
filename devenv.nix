@@ -8,10 +8,9 @@
 {
   dotenv.enable = true;
 
-  dagger.enable = true;
-  env.DAGGER_X_RELEASE = "v1.0.0-beta.14";
-
   packages = with pkgs; [
+    just
+
     lld
     cargo-audit
     cargo-deny

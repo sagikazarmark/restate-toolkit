@@ -186,20 +186,15 @@ Point `RESTATE_SERVER_BIN` at it and include ignored tests:
 RESTATE_SERVER_BIN="$PWD/restate-server" cargo test -p greeter -- --ignored
 ```
 
-Verified with Restate server **1.7.8**. Unix only.
+Verified with Restate server **1.8.0**. Unix only.
 
-## Dagger
+## CI
 
-This directory is a Dagger workspace of its own ([`dagger.toml`](dagger.toml)), with its own CI workflow
-([`dagger-examples-greeter.yaml`](../../.github/workflows/dagger-examples-greeter.yaml)).
-Run its checks from here:
+The repository's [CI workflow](../../.github/workflows/ci.yaml) checks, lints, tests and documents this
+crate with the rest of the workspace. Its `e2e` job runs the end-to-end test too: the
+[devenv](../../devenv.nix) shell it runs in provides `restate-server` and sets `RESTATE_SERVER_BIN`.
+From that shell, at the repository root:
 
 ```shell
-dagger check
+just e2e
 ```
-
-The `rust` module runs fmt, clippy, the tests and docs for this crate, on the container of the repository's
-[`rust-setup`](../../.dagger/modules/rust-setup/main.dang) module: the Rust image with `restate-server`
-copied from the Restate image and selected with `RESTATE_SERVER_BIN`. The crate's manifest configures the
-module's `test` to pass `--include-ignored` to the test binaries (`hack.test = ["--", "--include-ignored"]`
-in `[[package.metadata.dagger.modules]]`), so `rust:test` runs the end-to-end test too.

@@ -11,10 +11,6 @@ inputs:
     url: github:sagikazarmark/devenv-extras
     overlays:
       - default
-  dagger:
-    url: github:dagger/nix
-    overlays:
-      - default
   nix-restate:
     url: github:sagikazarmark/nix-restate
     inputs:

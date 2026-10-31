@@ -1,6 +1,6 @@
 # Restate Ext
 
-[![ci](https://img.shields.io/github/actions/workflow/status/sagikazarmark/restate-toolkit/dagger.yaml?style=flat-square&label=ci)](https://github.com/sagikazarmark/restate-toolkit/actions/workflows/dagger.yaml)
+[![ci](https://img.shields.io/github/actions/workflow/status/sagikazarmark/restate-toolkit/ci.yaml?style=flat-square&label=ci)](https://github.com/sagikazarmark/restate-toolkit/actions/workflows/ci.yaml)
 [![openssf scorecard](https://api.securityscorecards.dev/projects/github.com/sagikazarmark/restate-toolkit/badge?style=flat-square&label=openssf%20scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/sagikazarmark/restate-toolkit)
 [![crates.io](https://img.shields.io/crates/v/restate-ext?style=flat-square)](https://crates.io/crates/restate-ext)
 [![docs.rs](https://img.shields.io/docsrs/restate-ext?style=flat-square)](https://docs.rs/restate-ext)
