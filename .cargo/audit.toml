@@ -16,12 +16,4 @@ ignore = [
   # so the ECDSA code paths that use crypto-bigint never handle secret data.
   # Revisit when restate-sdk-shared-core moves to jsonwebtoken 11+.
   "RUSTSEC-2026-0387",
-
-  # humantime is pulled in by restate-config -> humantime-serde for duration
-  # strings in configuration files. The advisory is informational (unmaintained)
-  # with no known vulnerability. jiff, the usual replacement, rejects units of
-  # days or larger when parsing a std::time::Duration, which would break
-  # documented values such as "1day". Revisit if a vulnerability is reported or
-  # a maintained drop-in replacement appears.
-  "RUSTSEC-2026-0542",
 ]

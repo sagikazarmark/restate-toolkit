@@ -6,7 +6,6 @@ all-features = true
 ignore = [
   { id = "RUSTSEC-2023-0071", reason = "rsa via jsonwebtoken; SDK verifies EdDSA with public keys only, no patched release" },
   { id = "RUSTSEC-2026-0387", reason = "crypto-bigint 0.5 via jsonwebtoken 10 -> p256/p384; SDK verifies EdDSA with public keys only, blocked on restate-sdk-shared-core" },
-  { id = "RUSTSEC-2026-0542", reason = "humantime via humantime-serde is unmaintained, no known vulnerability; jiff rejects day units in std Durations" },
 ]
 
 [licenses]

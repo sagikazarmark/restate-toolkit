@@ -1,5 +1,6 @@
 use std::{collections::BTreeMap, time::Duration};
 
+use jiff::fmt::serde::unsigned_duration::friendly::compact::optional as duration;
 use restate_sdk::{
     endpoint::{HandlerOptions, ServiceOptions},
     service::{Discoverable, IntoServiceDefinition, ServiceDefinition},
@@ -11,7 +12,7 @@ use crate::ConfigError;
 /// Service policy overrides. Unset fields leave the SDK/service policy alone.
 ///
 /// The flat field names match the existing Rust endpoint configuration files.
-/// Durations are strings such as `"500ms"`, `"10s"`, or `"1day"`.
+/// Durations are strings such as `"500ms"`, `"10s"`, or `"1h 30m"`.
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct ServiceOptionsConfig {
@@ -19,16 +20,16 @@ pub struct ServiceOptionsConfig {
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub metadata: BTreeMap<String, String>,
     /// Time before Restate asks an inactive invocation to suspend.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub inactivity_timeout: Option<Duration>,
     /// Time to allow graceful suspension before aborting an invocation.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub abort_timeout: Option<Duration>,
     /// Retention of idempotent invocation results.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub idempotency_retention: Option<Duration>,
     /// Retention of completed invocation journals.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub journal_retention: Option<Duration>,
     /// Enable lazy state for virtual objects and workflows.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -37,13 +38,13 @@ pub struct ServiceOptionsConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ingress_private: Option<bool>,
     /// Delay before the first invocation retry.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub retry_policy_initial_interval: Option<Duration>,
     /// Multiplier between successive retry intervals.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub retry_policy_exponentiation_factor: Option<f64>,
     /// Maximum invocation retry delay.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub retry_policy_max_interval: Option<Duration>,
     /// Maximum attempts, including the initial invocation.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -64,19 +65,19 @@ pub struct HandlerOptionsConfig {
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub metadata: BTreeMap<String, String>,
     /// Time before Restate asks an inactive invocation to suspend.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub inactivity_timeout: Option<Duration>,
     /// Time to allow graceful suspension before aborting an invocation.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub abort_timeout: Option<Duration>,
     /// Retention of idempotent invocation results.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub idempotency_retention: Option<Duration>,
     /// Retention of workflow results (workflow entrypoint only).
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub workflow_retention: Option<Duration>,
     /// Retention of completed invocation journals.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub journal_retention: Option<Duration>,
     /// Restrict invocation to other Restate services rather than public ingress.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -85,13 +86,13 @@ pub struct HandlerOptionsConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enable_lazy_state: Option<bool>,
     /// Delay before the first invocation retry.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub retry_policy_initial_interval: Option<Duration>,
     /// Multiplier between successive retry intervals.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub retry_policy_exponentiation_factor: Option<f64>,
     /// Maximum invocation retry delay.
-    #[serde(with = "humantime_serde", skip_serializing_if = "Option::is_none")]
+    #[serde(with = "duration", skip_serializing_if = "Option::is_none")]
     pub retry_policy_max_interval: Option<Duration>,
     /// Maximum attempts, including the initial invocation.
     #[serde(skip_serializing_if = "Option::is_none")]

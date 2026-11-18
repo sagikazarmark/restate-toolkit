@@ -10,7 +10,7 @@ keywords = ["restate", "config", "serde", "durable-execution", "workflow"]
 categories = ["config", "asynchronous", "web-programming::http-server"]
 
 [dependencies]
-humantime-serde = "1.1.1"
+jiff = { version = "0.2.46", default-features = false, features = ["serde", "std"] }
 restate-sdk = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 thiserror = "2.0.16"

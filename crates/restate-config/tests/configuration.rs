@@ -100,7 +100,7 @@ async fn service_and_handler_policies_reach_discovery_with_explicit_false_and_ze
         "metadata": {"owner": "platform"},
         "inactivity_timeout": "30s",
         "abort_timeout": "5s",
-        "idempotency_retention": "1day",
+        "idempotency_retention": "24h",
         "journal_retention": "1h",
         "enable_lazy_state": true,
         "ingress_private": true,
@@ -158,7 +158,7 @@ async fn service_and_handler_policies_reach_discovery_with_explicit_false_and_ze
 #[tokio::test]
 async fn workflow_result_retention_is_a_handler_option() {
     let options: ServiceOptionsConfig = serde_json::from_value(json!({
-        "handlers": {"run": {"workflow_retention": "2days"}}
+        "handlers": {"run": {"workflow_retention": "48h"}}
     }))
     .unwrap();
     options.validate_handlers::<Workflow>().unwrap();
@@ -202,7 +202,7 @@ async fn sdk_builder_composes_services_objects_and_workflows_with_independent_op
                 "ingress_private": true,
                 "handlers": {"fetch_info": {"abort_timeout": "2s"}}
             },
-            "checkout": {"handlers": {"run": {"workflow_retention": "1day"}}},
+            "checkout": {"handlers": {"run": {"workflow_retention": "24h"}}},
             "notifications": {"inactivity_timeout": "30s"}
         }
     }))

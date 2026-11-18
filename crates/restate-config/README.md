@@ -120,7 +120,7 @@ These fields are available on both `ServiceOptionsConfig` and `HandlerOptionsCon
 | `retry_policy_max_attempts` | Unsigned integer | Maximum attempts, including the initial invocation. |
 | `retry_policy_on_max_attempts` | `"pause"` or `"kill"` | Pause for manual intervention or fail the invocation when attempts are exhausted. |
 
-Durations use human-readable strings such as `"500ms"`, `"30s"`, `"1h"`, or `"2days"`.
+Durations use human-readable strings such as `"500ms"`, `"30s"`, `"1h"`, or `"48h"`.
 
 Service policies also have a `handlers` map of handler names to `HandlerOptionsConfig`. Handler policies additionally support `workflow_retention`, a duration controlling workflow result retention on the workflow entrypoint.
 
