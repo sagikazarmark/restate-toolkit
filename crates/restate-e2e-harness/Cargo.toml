@@ -25,7 +25,7 @@ tokio = { workspace = true, features = ["macros", "net", "rt", "signal", "sync",
 # The harness spawns `restate-server` in a process group of its own and kills
 # the group with `killpg(2)`.
 [target.'cfg(unix)'.dependencies]
-nix = { version = "0.31", default-features = false, features = ["signal"] }
+nix = { version = "0.32", default-features = false, features = ["signal"] }
 # Safe non-reaping waitid on Linux and macOS (nix exposes it only on some Unix targets).
 rustix = { version = "1", features = ["process"] }
 
