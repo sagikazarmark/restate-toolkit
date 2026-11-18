@@ -99,6 +99,9 @@ jobs:
       - name: Test
         run: just test
 
+      - name: Package
+        run: just package
+
   e2e:
     name: E2E
     runs-on: ubuntu-latest
