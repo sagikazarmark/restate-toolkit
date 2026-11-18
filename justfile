@@ -4,7 +4,7 @@ default:
     @just --list --unsorted
 
 # Run all CI jobs.
-ci: fmt check clippy test e2e doc build audit
+ci: fmt check clippy test e2e package doc build audit
 
 # Build the workspace.
 build:
@@ -31,6 +31,12 @@ test:
 # Run the end-to-end tests against a real restate-server (RESTATE_SERVER_BIN, set by devenv).
 e2e:
     cargo test --workspace --all-features --tests --locked -- --ignored
+
+# `cargo publish` without uploading, as the Release workflow packages: catches files missing from
+# the packages and dev-dependencies that `cargo publish` strips.
+[doc("Build every crate from its packaged sources.")]
+package:
+    cargo publish --dry-run --workspace --locked
 
 # Run rustdoc.
 [env("RUSTDOCFLAGS", "--deny warnings")]
